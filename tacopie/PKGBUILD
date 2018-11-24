@@ -1,0 +1,40 @@
+# Maintainer: Nicholas Atkins <nbatkins@gmail.com>
+
+pkgname=tacopie-git
+pkgver=61b5659
+
+pkgrel=1
+pkgdesc='C++11 Asynchronous Multi-Platform Lightweight Redis Client'
+arch=('any')
+url='https://github.com/cpp-redis/cpp_redis'
+license=('MIT')
+makedepends=('git' 'gcc' 'cmake')
+provides=('cpp-redis-git')
+conflicts=('cpp-redis-git')
+source=('git+https://github.com/cpp-redis/cpp_redis.git')
+sha256sums=('SKIP')
+
+dldir=cpp_redis
+
+pkgver() {
+  cd $dldir
+
+  git describe --always | sed -E 's/([^-]*-g)/r\1/;s/-/./g'
+}
+
+build() {
+  mkdir -p $dldir/build && cd $dldir && git submodule init && git submodule update && cd build
+
+  #bundle install --path .
+  #export PATH="$(find $PWD/ruby -maxdepth 2 -type d -name bin):$PATH"
+
+  cmake -DCMAKE_BUILD_TYPE=Release ..
+  make
+}
+
+package() {
+  cd $dldir/build
+  sudo make install
+}
+
+# vim: ts=2 sw=2 et:
